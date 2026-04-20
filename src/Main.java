@@ -1,24 +1,64 @@
 public class Main {
 
-    // Method to compare two values in feet
-    public boolean areEqual(double value1, double value2) {
-        double epsilon = 0.0001; // handles decimal precision
-        return Math.abs(value1 - value2) < epsilon;
+    // Supported units
+    enum Unit {
+        FEET,
+        INCH
     }
 
+    // ---------------- GENERIC CLASS (DRY PRINCIPLE) ----------------
+    static class QuantityLength {
+
+        private double value;
+        private Unit unit;
+
+        public QuantityLength(double value, Unit unit) {
+            this.value = value;
+            this.unit = unit;
+        }
+
+        // Convert everything to FEET (base unit)
+        private double toFeet() {
+            switch (unit) {
+                case FEET:
+                    return value;
+
+                case INCH:
+                    return value / 12.0;
+
+                default:
+                    throw new IllegalArgumentException("Unsupported unit");
+            }
+        }
+
+        // Equality check
+        public boolean areEqual(QuantityLength other) {
+            double epsilon = 0.0001;
+            return Math.abs(this.toFeet() - other.toFeet()) < epsilon;
+        }
+    }
+
+    // Static compare method (as per requirement style)
+    public static boolean compare(QuantityLength q1, QuantityLength q2) {
+        return q1.areEqual(q2);
+    }
+
+    // MAIN METHOD
     public static void main(String[] args) {
 
-        // Create object
-        QuantityMeasurementApp app = new QuantityMeasurementApp();
+        // Hard-coded values (UC3 requirement)
+        QuantityLength feet1 = new QuantityLength(5.0, Unit.FEET);
+        QuantityLength feet2 = new QuantityLength(5.0, Unit.FEET);
 
-        // Input values (you can change these)
-        double value1 = 5.0;
-        double value2 = 5.0;
+        QuantityLength inch1 = new QuantityLength(12.0, Unit.INCH);
+        QuantityLength inch2 = new QuantityLength(12.0, Unit.INCH);
 
-        // Compare values
-        boolean result = app.areEqual(value1, value2);
+        // Comparisons
+        boolean feetResult = compare(feet1, feet2);
+        boolean inchResult = compare(inch1, inch2);
 
-        // Output result
-        System.out.println("Are the two measurements equal? " + result);
+        // Output
+        System.out.println("Feet equal: " + feetResult);
+        System.out.println("Inch equal: " + inchResult);
     }
 }
